@@ -49,7 +49,7 @@ app.get("/api/hello", async (req: Request, res: Response) => {
     const location = geoResponse.data.city || "Unknown";
 
     const weatherResponse = await axios.get<WeatherResponse>(
-      `api.openweathermap.org/data/2.5/weather?q=${location}&units=metric&appid=48c3baba43f99e9521a69d3463b3190c`
+      `api.openweathermap.org/data/2.5/weather?q=${location}&units=metric&appid=env(OPENWEATHERMAP_API_KEY)`
     );
     const temperature = weatherResponse.data.main.temp;
 
