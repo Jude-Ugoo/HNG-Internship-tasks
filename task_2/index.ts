@@ -29,13 +29,13 @@ app.get("/api/hello", async (req: Request, res: Response) => {
 
   try {
     const geoResponse = await axios.get<GeoResponse>(
-      `http://ip-api.com/json/${clientIP}`
+      `http://ip-api.com/json/102.88.71.33?fields=61439`
     );
     const location = geoResponse.data.city || "Unknown";
     console.log(location);
 
     const weatherResponse = await axios.get<WeatherResponse>(
-      `api.openweathermap.org/data/2.5/weather?q=${location}&units=metric&appid=process.env.WEATHER_API_KEY`
+      `http://api.openweathermap.org/data/2.5/weather?q=${location}&units=metric&appid=${process.env.WEATHER_API_KEY}`
     );
     const temperature = weatherResponse.data.main.temp;
     console.log(temperature);
