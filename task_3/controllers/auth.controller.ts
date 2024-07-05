@@ -80,8 +80,7 @@ export const register = async (req: Request, res: Response) => {
         const token = jwt.sign({
             userId: newUser.userId
         }, process.env.ACCESS_TOKEN_SECRET!,
-        { expiresIn: "1h" }
-    )
+        { expiresIn: "1h" })
 
         res.status(201).json({
             status: "success",
@@ -106,3 +105,78 @@ export const register = async (req: Request, res: Response) => {
         console.log(err)
     }
 }
+
+export const login = async (req: Request, res: Response) => {
+    const { email, password } = req.body
+
+    if (!email || !password) {
+        return res.status(422).json({
+            errors: [
+                {
+                    field: "email",
+                    message: "Email is required"
+                },
+                {
+                    field: "password",
+                    message: "Password is required"
+                }
+            ]
+        })
+    }
+
+    try {
+        const user = await prisma.user.findUnique({
+            where: 
+                {
+                    email: email
+                }
+        })
+
+        if (!user) {
+            return res.status(401).json({
+                status: 'Bad request',
+                message: 'Authentication failed',
+                statusCode: 401
+            });
+        }
+
+        //? Check if password is correct
+        const passwordStr = String(password)
+        const isPasswordValid = await argon2.verify(user.password, passwordStr)
+
+        if (!isPasswordValid) {
+            return res.status(401).json({
+                status: 'Bad request',
+                message: 'Authentication failed',
+                statusCode: 401
+            });
+        }
+
+        const token = jwt.sign({
+            userId: user.userId
+        }, process.env.ACCESS_TOKEN_SECRET!,
+        { expiresIn: "1h" })
+
+        res.status(200).json({
+            status: "success",
+            message: "Login successfull",
+            data: {
+                accessToken: token,
+                user: { 
+                    userId: user.userId,
+                    firstName: user.firstName, 
+                    lastName: user.lastName, 
+                    email: user.email, 
+                    phone: user.phone 
+                }
+            }
+        })
+    } catch (error) {
+        res.status(500).json({
+            status: "error",
+            message: "Server error",
+            statusCode: 500
+        })
+    }
+}
+
