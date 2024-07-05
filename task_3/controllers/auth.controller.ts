@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import { prisma } from "../utils/db";
 import * as argon2 from "argon2";
+import jwt from 'jsonwebtoken';
+import "dotenv/config"
 
 export const register = async (req: Request, res: Response) => {
     const { firstName, lastName, email, password, phone } = req.body
@@ -75,11 +77,17 @@ export const register = async (req: Request, res: Response) => {
             }
         })
 
+        const token = jwt.sign({
+            userId: newUser.userId
+        }, process.env.ACCESS_TOKEN_SECRET!,
+        { expiresIn: "1h" }
+    )
+
         res.status(201).json({
             status: "success",
             message: "Registration successfull",
             data: {
-                // accessToken: token,
+                accessToken: token,
                 user: { 
                     userId: newUser.userId,
                     firstName: newUser.firstName, 
