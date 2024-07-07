@@ -11,7 +11,7 @@ import { prisma } from "../utils/db";
 import jwt from "jsonwebtoken";
 import request from "supertest";
 import { hashPassword } from "../utils/authUtils";
-const app = require("../utils/orgTest");
+import app from "../server";
 
 describe("Organisation Endpoints", () => {
   let userToken: string;

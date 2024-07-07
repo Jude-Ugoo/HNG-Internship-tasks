@@ -3,7 +3,7 @@ import "dotenv";
 import { prisma } from "../utils/db";
 import request from "supertest";
 import { hashPassword } from "../utils/authUtils";
-const app = require("../utils/orgTest");
+import app from "../server";
 
 describe("Authentication Endpoints", () => {
   beforeAll(async () => {
@@ -13,6 +13,8 @@ describe("Authentication Endpoints", () => {
 
     await prisma.organisation.deleteMany();
     await prisma.user.deleteMany();
+
+    await app.listen(0)
   });
 
   afterEach(async () => {
