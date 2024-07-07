@@ -2,22 +2,21 @@ import { Request, Response } from 'express'
 import { prisma } from "../utils/db";
 
 export const getOrganisations = async (req: Request, res: Response ) => {
-    // const userId = req.user?.userId
-    // console.log(userId)
+    const userId = req.user?.userId.userId
 
-    // if (!userId) {
-    //     return res.status(401).json({
-    //         status: "Unauthorized",
-    //         message: "User not authenticated"
-    //     })
-    // }
+    if (!userId) {
+        return res.status(401).json({
+            status: "Unauthorized",
+            message: "User not authenticated"
+        })
+    }
 
     try {
         const organisations = await prisma.organisation.findMany({
             where: {
                 users: {
                     some: {
-                        userId: req.user?.userId
+                        userId: userId
                     }
                 }
             }
@@ -40,7 +39,7 @@ export const getOrganisations = async (req: Request, res: Response ) => {
 }
 
 export const getOrganisationById = async (req: Request, res: Response) =>{
-    const userId = req.user?.userId
+    const userId = req.user?.userId.userId
     const { orgId } = req.params
 
     try {
@@ -86,9 +85,10 @@ export const getOrganisationById = async (req: Request, res: Response) =>{
 }
 
 export const createOrganisation = async (req: Request, res: Response) => {
-    const userId = req.user?.userId
+    const userId = req.user?.userId.userId
     const { name, description } = req.body
-    const user = (req as any).user
+
+    console.log(userId)
 
     if (!name) {
         return res.status(422).json({
@@ -106,10 +106,10 @@ export const createOrganisation = async (req: Request, res: Response) => {
             data: {
                 name,
                 description,
-                creatorId: user.userId,
+                creatorId: userId,
                 users: {
                     connect: {
-                        userId: user.userId
+                        userId: userId
                     }
                 }
             }
@@ -134,9 +134,8 @@ export const createOrganisation = async (req: Request, res: Response) => {
 }
 
 export const addUserToOrganisation = async (req: Request, res: Response) => {
-    const userId = req.user?.userId
+    const userId = req.user?.userId.userId
     const { orgId } = req.params
-    const user = (req as any).user
 
     if (!orgId ) {
         return res.status(422).json({
@@ -174,10 +173,14 @@ export const addUserToOrganisation = async (req: Request, res: Response) => {
        }
 
       //? Add user to the organisation
-      await prisma.userOrganisation.create({
+      await prisma.organisation.update({
+        where: { orgId },
         data: {
-            userId: user.userId,
-            orgId: organisation.orgId
+            users: {
+                connect: {
+                    userId
+                }
+            }
         }
       })
 
@@ -194,38 +197,38 @@ export const addUserToOrganisation = async (req: Request, res: Response) => {
     }
 }
 
-export const getUserOrganisation = async (req: Request, res: Response) => {
-    const userId = req.user?.userId
+// export const getUserOrganisation = async (req: Request, res: Response) => {
+//     const userId = req.user?.userId
     
-    try {
-        const user = await prisma.user.findUnique({
-            where: { userId },
-            include: {
-                organisations: true,
-                createdOrganisations: true
-            }
-        })
+//     try {
+//         const user = await prisma.user.findUnique({
+//             where: { userId },
+//             include: {
+//                 organisations: true,
+//                 createdOrganisations: true
+//             }
+//         })
 
-        if (!user) {
-            return res.status(404).json({
-                status: "Not found",
-                message: "User not found"
-            })
-        }
+//         if (!user) {
+//             return res.status(404).json({
+//                 status: "Not found",
+//                 message: "User not found"
+//             })
+//         }
 
-        return res.status(200).json({
-            status: "success",
-            message: "User's organisations fetched successfully",
-            data: {
-                organisations: user.organisations,
-                createdOrganisations: user.createdOrganisations
-            }
-        })
-    } catch (error) {
-        return res.status(500).json({
-            status: "error",
-            message: "Internal server error",
-            error
-        })
-    }
-}
+//         return res.status(200).json({
+//             status: "success",
+//             message: "User's organisations fetched successfully",
+//             data: {
+//                 organisations: user.organisations,
+//                 createdOrganisations: user.createdOrganisations
+//             }
+//         })
+//     } catch (error) {
+//         return res.status(500).json({
+//             status: "error",
+//             message: "Internal server error",
+//             error
+//         })
+//     }
+// }
