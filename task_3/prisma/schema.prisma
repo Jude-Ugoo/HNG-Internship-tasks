@@ -16,7 +16,6 @@ model User {
   phone                String?
   organisations        Organisation[]     @relation("UserOrganisations")
   createdOrganisations Organisation[]     @relation("OrganisationCreator")
-  UserOrganisation     UserOrganisation[]
 }
 
 model Organisation {
@@ -28,15 +27,4 @@ model Organisation {
   // Field to track the creator of the organisation
   creatorId        String
   creator          User               @relation("OrganisationCreator", fields: [creatorId], references: [userId])
-  UserOrganisation UserOrganisation[]
-}
-
-model UserOrganisation {
-  userId String
-  orgId  String
-
-  user         User         @relation(fields: [userId], references: [userId])
-  organisation Organisation @relation(fields: [orgId], references: [orgId])
-
-  @@id([userId, orgId])
 }
