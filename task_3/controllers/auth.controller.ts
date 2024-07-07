@@ -51,7 +51,6 @@ export const register = async (req: Request, res: Response) => {
         const passwordStr = String(password)
 
         const hashedPassword = await argon2.hash(passwordStr)
-        console.log(hashedPassword)
 
         const newUser = await prisma.user.create({
             data: {
@@ -69,6 +68,7 @@ export const register = async (req: Request, res: Response) => {
         await prisma.organisation.create({
             data: {
                 name: orgName,
+                creatorId: newUser.userId,
                 users: {
                     connect: {
                         userId: newUser.userId
@@ -180,3 +180,6 @@ export const login = async (req: Request, res: Response) => {
     }
 }
 
+// export const logout = async (req: Request, res: Response) => {
+
+// }
