@@ -112,6 +112,7 @@ describe("Organisation Endpoints", () => {
       expect(response.body.data).toMatchObject({
         name: "New Organisation",
         description: "This is a new test organisation",
+        orgId: "efe18501-86e0-49a0-852a-2e3d1aa6d9e1"
       });
     });
   });

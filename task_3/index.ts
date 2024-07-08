@@ -1,10 +1,16 @@
-import app from "./server";
+// import app from "./server";
 import express, { Express, Request, Response } from "express";
-import { database } from "./utils/db";
 import cookieParser from "cookie-parser";
 import authRoute from "./routes/auth.route";
 import organisationRoute from "./routes/organisation.route";
 import userRoute from "./routes/user.route";
+import { database } from "./utils/db";
+
+const app: Express = express()
+
+app.use(express.json());
+app.use(cookieParser());
+database()
 
 const PORT = 8801;
 

@@ -63,7 +63,7 @@ export const register = async (req: Request, res: Response) => {
         })
 
         //? Create default Organization
-        const orgName = `${firstName}'s Organization`
+        const orgName = `${firstName}'s Organisation`
         
         await prisma.organisation.create({
             data: {
@@ -84,7 +84,7 @@ export const register = async (req: Request, res: Response) => {
 
         res.status(201).json({
             status: "success",
-            message: "Registration successfull",
+            message: "User registered successfully",
             data: {
                 accessToken: token,
                 user: { 
@@ -159,7 +159,7 @@ export const login = async (req: Request, res: Response) => {
 
         res.status(200).json({
             status: "success",
-            message: "Login successfull",
+            message: "User logged in successfully",
             data: {
                 accessToken: token,
                 user: { 
@@ -173,7 +173,7 @@ export const login = async (req: Request, res: Response) => {
         })
     } catch (error) {
         res.status(500).json({
-            status: "error",
+            status: "Bad request",
             message: "Server error",
             statusCode: 500
         })
