@@ -31,6 +31,8 @@ app.get("/api/hello", async (req: Request, res: Response) => {
     const geoResponse = await axios.get<GeoResponse>(
       `http://ip-api.com/json/102.88.71.33?fields=61439`
     );
+    console.log(geoResponse)
+
     const location = geoResponse.data.city || "Unknown";
     console.log(location);
 
